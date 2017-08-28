@@ -4,6 +4,7 @@
 const express = require('express')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
+const keys = require('./config/keys')
 
 // Initializing the application
 const app = express()
@@ -13,10 +14,18 @@ const port = 8080
 // Having the extended option marked true allows JSON-like objects to come through
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Adding routes by passing in the app and db
-require('./service/routes')(app, {})
+// Connecting to the DB
+MongoClient.connect(keys.dbURL, (error, database) => {
+  if (error) {
+    return console.log(error)
+  }
 
-// Starting the app
-app.listen(port, () => {
-  console.log('test on port ' + port + '!!!')
+  // Adding routes by passing in the app and db
+  require('./service/routes')(app, database)
+
+  // Starting the app
+  app.listen(port, () => {
+    console.log('test on port ' + port + '!!!')
+  })
+
 })

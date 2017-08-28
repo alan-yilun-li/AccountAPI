@@ -7,8 +7,15 @@ module.exports = function(app, db) {
   // CREATING OR EDITING A USER
   app.post(USER_URL, (req, res) => {
 
-    console.log(req.body)
-    res.send('Create user works')
+    const user = { username: req.body.username, password: req.body.password }
+
+    db.collection('users').insert(user, (error, result) => {
+      if (error) {
+        res.send({ 'error': 'Error occurred with creating user on DB' })
+      } else {
+        res.send(result)
+      }
+    })
   })
 
 

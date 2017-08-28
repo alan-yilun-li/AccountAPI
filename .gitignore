@@ -1,6 +1,6 @@
 
 # Secret Keys and Paths 
-keys.js
+config/keys.js
 
 # Logs
 logs
