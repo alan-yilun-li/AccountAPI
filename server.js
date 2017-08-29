@@ -8,14 +8,14 @@ const keys = require('./config/keys')
 
 // Initializing the application
 const app = express()
-const port = 8080
+const PORT_NUMBER = 8080
 
 // Parsing the urlencoded HTTP requests
 // Having the extended option marked true allows JSON-like objects to come through
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Connecting to the DB
-MongoClient.connect(keys.dbURL, (error, database) => {
+MongoClient.connect(keys.DB_URL, (error, database) => {
   if (error) {
     return console.log(error)
   }
@@ -24,8 +24,8 @@ MongoClient.connect(keys.dbURL, (error, database) => {
   require('./service/routes')(app, database)
 
   // Starting the app
-  app.listen(port, () => {
-    console.log('test on port ' + port + '!!!')
+  app.listen(PORT_NUMBER, () => {
+    console.log('test on port ' + PORT_NUMBER + '!!!')
   })
 
 })

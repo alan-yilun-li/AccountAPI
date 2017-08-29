@@ -7,7 +7,7 @@
     "test": "nodemon server.js",
     "start": "node server.js"
   },
-  "author": "Alan Li",
+  "author": "Alan Li, Andrew Lor",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.2",

@@ -9,13 +9,11 @@
 */
 
 // Adding dependent routes
-const lifeCycleRoutes = require('./life_cycle_routes')
+const lifeCycleRoutes = require('./lifeCycleRoutes')
 
-// Packaging and exporting 
+// Packaging and exporting
 module.exports = function(app, db) {
   lifeCycleRoutes(app, db)
-
-
 
 
 }

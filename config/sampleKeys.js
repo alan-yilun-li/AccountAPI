@@ -6,6 +6,6 @@
 
 module.exports = {
 
-  dbURL: 'sample_url_place_your_real_url_here'
+  DB_URL: 'sample_url_place_your_real_url_here'
 
 }
