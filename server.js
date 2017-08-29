@@ -5,6 +5,7 @@ const express = require('express')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
 const keys = require('./config/keys')
+const collections = require('./db/collections')
 
 // Initializing the application
 const app = express()
@@ -19,6 +20,9 @@ MongoClient.connect(keys.DB_URL, (error, database) => {
   if (error) {
     return console.log(error)
   }
+
+  // Load collections
+  collections(database)
 
   // Adding routes by passing in the app and db
   require('./service/routes')(app, database)
