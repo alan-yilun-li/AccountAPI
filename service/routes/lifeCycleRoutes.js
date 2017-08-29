@@ -1,6 +1,9 @@
 "use strict"
 
+var ObjectID = require('mongodb').ObjectID
+
 const USER_URL = '/users'
+const SPECIFIC_USER_PATH = '/:id'
 
 module.exports = function(app, db) {
 
@@ -22,11 +25,20 @@ module.exports = function(app, db) {
   // DELETING A USER
 
 
-
-
-
   // GETTING A USER'S INFORMATION
+  app.get(USER_URL + SPECIFIC_USER_PATH, (req, res) => {
 
+    const id = req.params.id;
+    const details = { '_id': new ObjectID(id) };
 
+    var results = db.collection('users').findOne(details, (error, item) => {
+
+      if (error) {
+        res.send({ 'error' : 'An error!!!!!'});
+      } else {
+        res.send(item);
+      }
+    })
+  })
 
 }

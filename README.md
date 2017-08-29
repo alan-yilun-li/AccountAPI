@@ -2,7 +2,7 @@
 
 ## Summary
 
-Simple RESTful API service module to reuse and deploy for various apps that need some kind of account system. Made with the MEN (Mongo, Express, Node.js) stack.
+Simple RESTful API service module to reuse and deploy for various apps that need some kind of account system. Made with the ME~~A~~N (Mongo, Express, Node.js) stack.
 
 ## Style
 
