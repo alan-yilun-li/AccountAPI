@@ -32,4 +32,11 @@ module.exports = function(app, db) {
     lifeCycleController.findUser(username).then(result => res.send(result))
   })
 
+  // UPDATING A USER'S INFORMATION
+  app.put(USER_URL + SPECIFIC_USER_PATH, (req, res) => {
+
+    const username = req.params.username
+    const newData = { username: req.body.username, password: req.body.password }
+    lifeCycleController.updateUser(username, newData).then(result => res.send(result))
+  })
 }
