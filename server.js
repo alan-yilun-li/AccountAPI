@@ -4,8 +4,8 @@
 const express = require('express')
 const MongoClient = require('mongodb').MongoClient
 const bodyParser = require('body-parser')
-const keys = require('./config/keys')
-const collections = require('./db/collections')
+const keys = require('./config/keys.js')
+const collections = require('./db/collections.js')
 
 // Initializing the application
 const app = express()
