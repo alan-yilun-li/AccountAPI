@@ -11,7 +11,7 @@ module.exports = (db) => {
   return {
 
     // Inserting a new user into the DB
-    insertUser: function(req, res) {
+    insertUser: function insertUserToDB(req, res) {
       const user = { username: req.body.username, password: req.body.password }
       db.collection('users').insert(user)
       .then((result) => {
@@ -23,7 +23,7 @@ module.exports = (db) => {
     },
 
     // Deleting a user from the DB
-    deleteUser: function(req, res) {
+    deleteUser: function deleteUserFromDB(req, res) {
       const username = req.params.username
       db.collection('users').deleteOne({ username: username})
       .then((result) => {
@@ -43,7 +43,7 @@ module.exports = (db) => {
     },
 
     // Finding a given user from the DB by their username
-    findUser: function(req, res) {
+    findUser: function findUserWithUsername(req, res) {
       const username = req.params.username
       return db.collection('users').findOne({ username: username })
       .then((result) => {
@@ -61,7 +61,7 @@ module.exports = (db) => {
 
 
     // Updating a given user's username and/or password from the DB by their username
-    updateUser: function(req, res) {
+    updateUser: function updateUserWithUsername(req, res) {
       const username = req.params.username
       const newData = { username: req.body.username, password: req.body.password }
 
