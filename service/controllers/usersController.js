@@ -11,30 +11,30 @@ module.exports = (db) => {
   return {
 
     // Inserting a new user into the DB
-    insertUser: function(req) {
+    insertUser: function(req, res) {
       const user = { username: req.body.username, password: req.body.password }
-      return db.collection('users').insert(user)
+      db.collection('users').insert(user)
       .then((result) => {
-        return result
+        res.send({success: result})
       })
       .catch((error) => {
-        return {error: error.errmsg}
+        res.send({error: error.errmsg})
       })
     },
 
     // Deleting a user from the DB
-    deleteUser: function(req) {
+    deleteUser: function(req, res) {
       const username = req.params.username
-      return db.collection('users').deleteOne({ username: username})
+      db.collection('users').deleteOne({ username: username})
       .then((result) => {
         // Returns a JSON string that we need to check for n (number of items changed)
         const resultObj = JSON.parse(result)
         if (resultObj.n == 1) {
-          return {success: result}
+          res.send({success: result})
         } else {
 
           // As there were != 1 items changed. Should only be zero.
-          return {error: 'user does not exist'}
+          res.send({error: 'user does not exist'})
         }
       })
       .catch((error) => {
@@ -43,25 +43,25 @@ module.exports = (db) => {
     },
 
     // Finding a given user from the DB by their username
-    findUser: function(req) {
+    findUser: function(req, res) {
       const username = req.params.username
       return db.collection('users').findOne({ username: username })
       .then((result) => {
         // Checking if our query returns null
         if (result) {
-          return result
+          res.send(result)
         } else {
-          return {error: 'No such user in DB'}
+          res.send({error: 'No such user in DB'})
         }
       })
       .catch((error) => {
-        return {error: error.errmsg}
+        res.send({error: error.errmsg})
       })
     },
 
 
     // Updating a given user's username and/or password from the DB by their username
-    updateUser: function(req) {
+    updateUser: function(req, res) {
       const username = req.params.username
       const newData = { username: req.body.username, password: req.body.password }
 
@@ -76,15 +76,15 @@ module.exports = (db) => {
       }
 
       // Performing the actual DB operation
-      return db.collection('users').updateOne(
+      db.collection('users').updateOne(
         { username: username },
         { $set: dataToUpdate }
       )
       .then((result) => {
-        return {success: result}
+        res.send({success: result})
       })
       .catch((error) => {
-        return {error: error.errmsg}
+        res.send({error: error.errmsg})
       })
     }
   }
