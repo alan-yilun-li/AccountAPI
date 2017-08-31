@@ -11,7 +11,8 @@ module.exports = (db) => {
   return {
 
     // Inserting a new user into the DB
-    insertUser: function insertUserToDB(user) {
+    insertUser: function(req) {
+      const user = { username: req.body.username, password: req.body.password }
       return db.collection('users').insert(user)
       .then((result) => {
         return result
@@ -22,7 +23,8 @@ module.exports = (db) => {
     },
 
     // Deleting a user from the DB
-    deleteUser: function deleteUserWithUsername(username) {
+    deleteUser: function(req) {
+      const username = req.params.username
       return db.collection('users').deleteOne({ username: username})
       .then((result) => {
         // Returns a JSON string that we need to check for n (number of items changed)
@@ -41,7 +43,8 @@ module.exports = (db) => {
     },
 
     // Finding a given user from the DB by their username
-    findUser: function findUserWithUsername(username) {
+    findUser: function(req) {
+      const username = req.params.username
       return db.collection('users').findOne({ username: username })
       .then((result) => {
         // Checking if our query returns null
@@ -58,7 +61,9 @@ module.exports = (db) => {
 
 
     // Updating a given user's username and/or password from the DB by their username
-    updateUser: function updateUserWithUsername(username, newData) {
+    updateUser: function(req) {
+      const username = req.params.username
+      const newData = { username: req.body.username, password: req.body.password }
 
       // Checking to see if any fields do not need to be updated...
       // This is so that we are not wiping the user's data by replacing it with null.
