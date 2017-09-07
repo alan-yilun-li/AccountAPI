@@ -76,7 +76,16 @@ module.exports = (db) => {
         { $set: dataToUpdate }
       )
       .then((result) => {
-        return {success: result}
+        // Returns a JSON string that we need to check for n (number of items changed)
+        const resultObj = JSON.parse(result)
+        if (resultObj.nModified == 1) {
+          return {success: result}
+        } else if (resultObj.n == 1) {
+          return {error: 'tried to update with the same information'}
+        } else {
+          // As there were != 1 items changed. Should only be zero.
+          return {error: 'user does not exist'}
+        }
       })
       .catch((error) => {
         return {error: error.errmsg}
