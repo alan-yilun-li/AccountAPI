@@ -11,28 +11,30 @@ module.exports = (db) => {
   return {
 
     // Inserting a new user into the DB
-    insertUser: function insertUserToDB(user) {
-      return db.collection('users').insert(user)
+    insertUser: function insertUserToDB(req, res) {
+      const user = { username: req.body.username, password: req.body.password }
+      db.collection('users').insert(user)
       .then((result) => {
-        return result
+        res.send({success: result})
       })
       .catch((error) => {
-        return {error: error.errmsg}
+        res.send({error: error.errmsg})
       })
     },
 
     // Deleting a user from the DB
-    deleteUser: function deleteUserWithUsername(username) {
-      return db.collection('users').deleteOne({ username: username})
+    deleteUser: function deleteUserFromDB(req, res) {
+      const username = req.params.username
+      db.collection('users').deleteOne({ username: username})
       .then((result) => {
         // Returns a JSON string that we need to check for n (number of items changed)
         const resultObj = JSON.parse(result)
         if (resultObj.n == 1) {
-          return {success: result}
+          res.send({success: result})
         } else {
 
           // As there were != 1 items changed. Should only be zero.
-          return {error: 'user does not exist'}
+          res.send({error: 'user does not exist'})
         }
       })
       .catch((error) => {
@@ -41,24 +43,26 @@ module.exports = (db) => {
     },
 
     // Finding a given user from the DB by their username
-    findUser: function findUserWithUsername(username) {
+    findUser: function findUserWithUsername(req, res) {
+      const username = req.params.username
       return db.collection('users').findOne({ username: username })
       .then((result) => {
         // Checking if our query returns null
         if (result) {
-          return result
+          res.send(result)
         } else {
-          return {error: 'No such user in DB'}
+          res.send({error: 'No such user in DB'})
         }
       })
       .catch((error) => {
-        return {error: error.errmsg}
+        res.send({error: error.errmsg})
       })
     },
 
-
     // Updating a given user's username and/or password from the DB by their username
-    updateUser: function updateUserWithUsername(username, newData) {
+    updateUser: function updateUserWithUsername(req, res) {
+      const username = req.params.username
+      const newData = { username: req.body.username, password: req.body.password }
 
       // Checking to see if any fields do not need to be updated...
       // This is so that we are not wiping the user's data by replacing it with null.
@@ -69,9 +73,8 @@ module.exports = (db) => {
           dataToUpdate[key] = newData[key]
         }
       }
-
       // Performing the actual DB operation
-      return db.collection('users').updateOne(
+      db.collection('users').updateOne(
         { username: username },
         { $set: dataToUpdate }
       )
@@ -79,16 +82,16 @@ module.exports = (db) => {
         // Returns a JSON string that we need to check for n (number of items changed)
         const resultObj = JSON.parse(result)
         if (resultObj.nModified == 1) {
-          return {success: result}
+          res.send({success: result})
         } else if (resultObj.n == 1) {
-          return {error: 'tried to update with the same information'}
+          res.send({error: 'tried to update with the same information'})
         } else {
           // As there were != 1 items changed. Should only be zero.
-          return {error: 'user does not exist'}
+          res.send({error: 'user does not exist'})
         }
       })
       .catch((error) => {
-        return {error: error.errmsg}
+        res.send({error: error.errmsg})
       })
     }
   }
