@@ -3,7 +3,7 @@
 var Promise = require('promise')
 
 /*
-Holds functions called in the lifeCycleRoutes.js file to
+Holds functions called in the routes.js file that
 manage users themselves.
 */
 
@@ -81,6 +81,7 @@ module.exports = (db) => {
       .then((result) => {
         // Returns a JSON string that we need to check for n (number of items changed)
         const resultObj = JSON.parse(result)
+
         if (resultObj.nModified == 1) {
           res.send({success: result})
         } else if (resultObj.n == 1) {
