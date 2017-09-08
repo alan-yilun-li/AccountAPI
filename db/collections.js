@@ -9,6 +9,11 @@ let userSchema = mongoose.Schema({
 	password: {
 		type: String,
 		required: true
+	},
+	token: {
+		type: String,
+		required: true,
+		unique: true
 	}
 })
 

@@ -2,6 +2,7 @@
 
 const Promise = require('promise')
 const User = require('../../db/collections').User
+const token = require('rand-token')
 
 /*
 Holds functions called in the lifeCycleRoutes.js file to
@@ -11,7 +12,7 @@ manage users themselves.
 module.exports = {
   // Inserting a new user into the DB
   insertUser: function insertUserToDB(req, res) {
-    const user = { username: req.body.username, password: req.body.password }
+    const user = { username: req.body.username, password: req.body.password, token: token.generate(16) }
     let newUser = new User(user)
     newUser.save()
     .then((result) => {
