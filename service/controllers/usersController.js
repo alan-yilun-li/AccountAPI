@@ -3,7 +3,7 @@
 var Promise = require('promise')
 
 /*
-Holds functions called in the lifeCycleRoutes.js file to
+Holds functions called in the routes.js file that
 manage users themselves.
 */
 
@@ -59,7 +59,6 @@ module.exports = (db) => {
       })
     },
 
-
     // Updating a given user's username and/or password from the DB by their username
     updateUser: function updateUserWithUsername(req, res) {
       const username = req.params.username
@@ -74,14 +73,23 @@ module.exports = (db) => {
           dataToUpdate[key] = newData[key]
         }
       }
-
       // Performing the actual DB operation
       db.collection('users').updateOne(
         { username: username },
         { $set: dataToUpdate }
       )
       .then((result) => {
-        res.send({success: result})
+        // Returns a JSON string that we need to check for n (number of items changed)
+        const resultObj = JSON.parse(result)
+
+        if (resultObj.nModified == 1) {
+          res.send({success: result})
+        } else if (resultObj.n == 1) {
+          res.send({error: 'tried to update with the same information'})
+        } else {
+          // As there were != 1 items changed. Should only be zero.
+          res.send({error: 'user does not exist'})
+        }
       })
       .catch((error) => {
         res.send({error: error.errmsg})
