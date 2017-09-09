@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect(keys.DB_URL);
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
+db.once('openUri', function() {
   // Adding routes by passing in the app and db
   require('./service/routes')(app)
 
