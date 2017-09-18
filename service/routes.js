@@ -1,11 +1,10 @@
 "use strict"
 
-var Promise = require('promise')
+const usersController = require('./controllers/usersController.js')
 
-module.exports = function(app, db) {
-  const lifeCycleController = require('./controllers/usersController.js')(db)
-  app.post('/users', (req, res) => {lifeCycleController.insertUser(req, res)})
-  app.delete('/users/:username', (req, res) => {lifeCycleController.deleteUser(req, res)})
-  app.get('/users/:username', (req, res) => {lifeCycleController.findUser(req, res)})
-  app.put('/users/:username', (req, res) => {lifeCycleController.updateUser(req, res)})
+module.exports = function(app) {
+  app.post('/users', (req, res) => {usersController.insertUser(req, res)})
+  app.delete('/users/:username', (req, res) => {usersController.deleteUser(req, res)})
+  app.get('/users/:username', (req, res) => {usersController.findUser(req, res)})
+  app.put('/users/:username', (req, res) => {usersController.updateUser(req, res)})
 }
