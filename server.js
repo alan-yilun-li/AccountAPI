@@ -15,8 +15,11 @@ const PORT_NUMBER = 8080
 // Having the extended option marked true allows JSON-like objects to come through
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Configure mongoose to use naitive js promises
+mongoose.Promise = global.Promise
+
 // Connecting to the DB
-mongoose.connect(keys.DB_URL);
+mongoose.connect(keys.DB_URL, {useMongoClient: true});
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('openUri', function() {
