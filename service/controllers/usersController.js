@@ -3,6 +3,7 @@
 const Promise = require('promise')
 const User = require('../../db/collections').User
 const token = require('rand-token')
+const usersPresenter = require('../presenters').users
 
 /*
 Holds functions called in the routes.js file that
@@ -45,7 +46,7 @@ module.exports = {
     User.findOne({ username: username }).then((result) => {
       // Checking if our query returns null
       if (result) {
-        res.send(result)
+        res.send(usersPresenter.present(result))
       } else {
         res.send({error: 'No such user in DB'})
       }
@@ -88,12 +89,15 @@ module.exports = {
     const username = req.body.username
     const password = req.body.password
     User.findOne({ username: username }).then((result) => {
-      if (password === result.password) {
-        res.send({token: result.token})
-      } 
-      else {
-        res.send({error: "auth error"})
-      }
+      result.comparePassword(password, function(err, isMatch) {
+        if (err) {
+          res.send({error: "auth error"})
+        } else if (isMatch) {
+          res.send({token: result.token})
+        } else {
+          res.send({error: "auth error"})
+        }
+      })
     }).catch((err) => {
       res.send({error: "query error"})
     })
