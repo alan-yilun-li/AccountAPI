@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.Promise = global.Promise
 
 // Connecting to the DB
-mongoose.connect(keys.DB_URL);
+mongoose.connect(keys.DB_URL, {useMongoClient: true});
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
