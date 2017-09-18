@@ -2,6 +2,7 @@
 
 const Promise = require('promise')
 const User = require('../../db/collections').User
+const token = require('rand-token')
 
 /*
 Holds functions called in the routes.js file that
@@ -11,7 +12,7 @@ manage users themselves.
 module.exports = {
   // Inserting a new user into the DB
   insertUser: function insertUserToDB(req, res) {
-    const user = { username: req.body.username, password: req.body.password }
+    const user = { username: req.body.username, password: req.body.password, token: token.generate(16) }
     let newUser = new User(user)
     newUser.save().then((result) => {
       res.send({success: result})
@@ -81,6 +82,20 @@ module.exports = {
     }).catch((err) => {
       res.send({error: "query error"})
     })
+  },
 
+  getToken: function getTokenWithUsername(req, res) {
+    const username = req.body.username
+    const password = req.body.password
+    User.findOne({ username: username }).then((result) => {
+      if (password === result.password) {
+        res.send({token: result.token})
+      } 
+      else {
+        res.send({error: "auth error"})
+      }
+    }).catch((err) => {
+      res.send({error: "query error"})
+    })
   }
 }
