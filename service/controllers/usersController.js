@@ -82,6 +82,20 @@ module.exports = {
     }).catch((err) => {
       res.send({error: "query error"})
     })
+  },
 
+  getToken: function getTokenWithUsername(req, res) {
+    const username = req.body.username
+    const password = req.body.password
+    User.findOne({ username: username }).then((result) => {
+      if (password === result.password) {
+        res.send({token: result.token})
+      } 
+      else {
+        res.send({error: "auth error"})
+      }
+    }).catch((err) => {
+      res.send({error: "query error"})
+    })
   }
 }
