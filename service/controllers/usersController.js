@@ -16,7 +16,7 @@ module.exports = {
     const user = { username: req.body.username, password: req.body.password, token: token.generate(16) }
     let newUser = new User(user)
     newUser.save().then((result) => {
-      res.send({success: result})
+      res.send({success: 1, user: usersPresenter.present(result)})
     }).catch((error) => {
       res.send({error: error});
     })
@@ -46,7 +46,7 @@ module.exports = {
     User.findOne({ username: username }).then((result) => {
       // Checking if our query returns null
       if (result) {
-        res.send(usersPresenter.present(result))
+        res.send({success: 1, user: usersPresenter.present(result)})
       } else {
         res.send({error: 'No such user in DB'})
       }
@@ -67,21 +67,21 @@ module.exports = {
     }
 
     User.findOne({ username: username }).then((user) => {
-      user.update({ $set: newData }).then((result) => {
+      user.comparePassword(newData.password, function(err, isMatch) {
+        if ((newData.password && !isMatch) || (newData.username && newData.username !== user.username)) {
+          user.set(newData)
+          user.save().then((result) => {
+            res.send({success: 1, user: usersPresenter.present(result)})
+          }).catch((err) => {
+            res.send({error: err.errmsg})
+          })
+        } else {
+          res.send({error: 'tried to update with the same information'})
+        }
 
-      if (result.nModified == 1) {
-        res.send({success: result})
-      } else if (result.n == 1) {
-        res.send({error: 'tried to update with the same information'})
-      } else { // As there were != 1 items changed. Should only be zero.
-        res.send({error: 'user does not exist'})
-      }
-
-      }).catch((err) => {
-        res.send({error: "update error"})
       })
     }).catch((err) => {
-      res.send({error: "query error"})
+      res.send({error: err.errmsg})
     })
   },
 
