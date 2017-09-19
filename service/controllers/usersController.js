@@ -58,7 +58,9 @@ module.exports = {
   // Updating a given user's username and/or password from the DB by their username
   updateUser: function updateUserWithUsername(req, res) {
     const username = req.params.username
-    const newData = { username: req.body.username, password: req.body.password }
+    const newData = { username: req.body.username }
+    // Separate password, handled differently
+    const newPassword = req.body.password ? req.body.password : ""
 
     for (let key in newData) {
       if (!newData[key]) {
@@ -67,8 +69,10 @@ module.exports = {
     }
 
     User.findOne({ username: username }).then((user) => {
-      user.comparePassword(newData.password, function(err, isMatch) {
-        if ((newData.password && !isMatch) || (newData.username && newData.username !== user.username)) {
+      user.comparePassword(newPassword).then((isMatch) => {
+        user.set(newData)
+        if ((newPassword && !isMatch) || user.isModified()) {
+          newData.password = newPassword
           user.set(newData)
           user.save().then((result) => {
             res.send({success: 1, user: usersPresenter.present(result)})
@@ -78,8 +82,9 @@ module.exports = {
         } else {
           res.send({error: 'tried to update with the same information'})
         }
-
-      })
+      }).catch((err) => {
+        res.send({error: 1})
+      })  
     }).catch((err) => {
       res.send({error: err.errmsg})
     })
@@ -89,14 +94,14 @@ module.exports = {
     const username = req.body.username
     const password = req.body.password
     User.findOne({ username: username }).then((result) => {
-      result.comparePassword(password, function(err, isMatch) {
-        if (err) {
-          res.send({error: "auth error"})
-        } else if (isMatch) {
+      result.comparePassword(password).then((isMatch) => {
+        if (isMatch) {
           res.send({token: result.token})
         } else {
           res.send({error: "auth error"})
         }
+      }).catch(() => {
+        res.send({error: "auth error"})
       })
     }).catch((err) => {
       res.send({error: "query error"})
