@@ -3,6 +3,7 @@
 const Promise = require('promise')
 const User = require('../../db/collections').User
 const token = require('rand-token')
+const usersPresenter = require('../presenters').users
 
 /*
 Holds functions called in the routes.js file that
@@ -15,7 +16,7 @@ module.exports = {
     const user = { username: req.body.username, password: req.body.password, token: token.generate(16) }
     let newUser = new User(user)
     newUser.save().then((result) => {
-      res.send({success: result})
+      res.send({success: 1, user: usersPresenter.present(result)})
     }).catch((error) => {
       res.send({error: error});
     })
@@ -45,7 +46,7 @@ module.exports = {
     User.findOne({ username: username }).then((result) => {
       // Checking if our query returns null
       if (result) {
-        res.send(result)
+        res.send({success: 1, user: usersPresenter.present(result)})
       } else {
         res.send({error: 'No such user in DB'})
       }
@@ -57,7 +58,9 @@ module.exports = {
   // Updating a given user's username and/or password from the DB by their username
   updateUser: function updateUserWithUsername(req, res) {
     const username = req.params.username
-    const newData = { username: req.body.username, password: req.body.password }
+    const newData = { username: req.body.username }
+    // Separate password, handled differently
+    const newPassword = req.body.password ? req.body.password : ""
 
     for (let key in newData) {
       if (!newData[key]) {
@@ -66,21 +69,24 @@ module.exports = {
     }
 
     User.findOne({ username: username }).then((user) => {
-      user.update({ $set: newData }).then((result) => {
-
-      if (result.nModified == 1) {
-        res.send({success: result})
-      } else if (result.n == 1) {
-        res.send({error: 'tried to update with the same information'})
-      } else { // As there were != 1 items changed. Should only be zero.
-        res.send({error: 'user does not exist'})
-      }
-
+      user.comparePassword(newPassword).then((isMatch) => {
+        user.set(newData)
+        if ((newPassword && !isMatch) || user.isModified()) {
+          newData.password = newPassword
+          user.set(newData)
+          user.save().then((result) => {
+            res.send({success: 1, user: usersPresenter.present(result)})
+          }).catch((err) => {
+            res.send({error: err.errmsg})
+          })
+        } else {
+          res.send({error: 'tried to update with the same information'})
+        }
       }).catch((err) => {
-        res.send({error: "update error"})
-      })
+        res.send({error: 1})
+      })  
     }).catch((err) => {
-      res.send({error: "query error"})
+      res.send({error: err.errmsg})
     })
   },
 
@@ -88,12 +94,15 @@ module.exports = {
     const username = req.body.username
     const password = req.body.password
     User.findOne({ username: username }).then((result) => {
-      if (password === result.password) {
-        res.send({token: result.token})
-      } 
-      else {
+      result.comparePassword(password).then((isMatch) => {
+        if (isMatch) {
+          res.send({token: result.token})
+        } else {
+          res.send({error: "auth error"})
+        }
+      }).catch(() => {
         res.send({error: "auth error"})
-      }
+      })
     }).catch((err) => {
       res.send({error: "query error"})
     })
