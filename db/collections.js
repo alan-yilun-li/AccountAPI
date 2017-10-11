@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const autoIncrement = require('mongoose-auto-increment')
 const SALT_WORK_FACTOR = 10
 
 let userSchema = mongoose.Schema({
@@ -18,6 +19,9 @@ let userSchema = mongoose.Schema({
 		unique: true
 	}
 })
+
+autoIncrement.initialize(mongoose.connection)
+userSchema.plugin(autoIncrement.plugin, 'User')
 
 userSchema.pre('save', function(next) {
     var user = this
