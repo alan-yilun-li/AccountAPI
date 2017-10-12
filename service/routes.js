@@ -4,7 +4,7 @@ const usersController = require('./controllers').users
 const authenticateToken = require('./middleware').authenticateToken
 
 module.exports = function(app) {
-  app.get('/users/tokens', (req, res) => {usersController.getToken(req, res)})
+  app.post('/users/login', (req, res) => {usersController.getToken(req, res)})
   app.post('/users', (req, res) => {usersController.insertUser(req, res)})
 
   // Use authenticate token method as middleware for this path
