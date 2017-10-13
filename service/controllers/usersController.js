@@ -58,9 +58,7 @@ module.exports = {
   // Updating a given user's username and/or password from the DB by their username
   updateUser: function updateUserWithUsername(req, res) {
     const username = req.params.username
-    const newData = { username: req.body.username }
-    // Separate password, handled differently
-    const newPassword = req.body.password ? req.body.password : ""
+    const newData = { username: req.body.username, password: req.body.password }
 
     for (let key in newData) {
       if (!newData[key]) {
@@ -69,24 +67,14 @@ module.exports = {
     }
 
     User.findOne({ username: username }).then((user) => {
-      user.comparePassword(newPassword).then((isMatch) => {
-        user.set(newData)
-        if ((newPassword && !isMatch) || user.isModified()) {
-          newData.password = newPassword
-          user.set(newData)
-          user.save().then((result) => {
-            res.send({success: 1, user: usersPresenter.present(result)})
-          }).catch((err) => {
-            res.send({error: err.errmsg})
-          })
-        } else {
-          res.send({error: 'tried to update with the same information'})
-        }
+      user.set(newData)
+      user.save().then((result) => {
+        res.send({success: 1, user: usersPresenter.present(result)})
       }).catch((err) => {
-        res.send({error:err.errmsg})
-      })  
+        res.send({error: 1, errmsg: err.errmsg})
+      }) 
     }).catch((err) => {
-      res.send({error: err.errmsg})
+      res.send({error: 1, errmsg: 'query error'})
     })
   },
 
