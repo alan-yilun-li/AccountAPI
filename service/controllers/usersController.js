@@ -83,7 +83,7 @@ module.exports = {
           res.send({error: 'tried to update with the same information'})
         }
       }).catch((err) => {
-        res.send({error: 1})
+        res.send({error:err.errmsg})
       })  
     }).catch((err) => {
       res.send({error: err.errmsg})

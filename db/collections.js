@@ -17,11 +17,44 @@ let userSchema = mongoose.Schema({
 		type: String,
 		required: true,
 		unique: true
+	},
+	challenges: {
+		type: Array,
+		default: []
+	},
+	createdAt: {
+		type: Date,
+		default: new Date()
+	}
+})
+
+let challengeSchema = mongoose.Schema({
+	title: {
+		type: String,
+		required: true
+	},
+	isPublic: {
+		type: Boolean,
+		required: true,
+		default: true
+	},
+	subscribedUsers: {
+		type: Array,
+		required: true,
+		default: []
+	},
+	//
+	// Array of attempt ids
+	//
+	createdAt: {
+		type: Date,
+		default: new Date()
 	}
 })
 
 autoIncrement.initialize(mongoose.connection)
 userSchema.plugin(autoIncrement.plugin, 'User')
+challengeSchema.plugin(autoIncrement.plugin, 'Challenge')
 
 userSchema.pre('save', function(next) {
     var user = this
@@ -57,5 +90,6 @@ userSchema.methods.comparePassword = function(candidatePassword) {
 };
 
 module.exports = {
-	User: mongoose.model('User', userSchema)
+	User: mongoose.model('User', userSchema),
+	Challenge: mongoose.model('Challenge', challengeSchema)
 }
