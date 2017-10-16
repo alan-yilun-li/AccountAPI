@@ -18,10 +18,6 @@ let userSchema = mongoose.Schema({
 		required: true,
 		unique: true
 	},
-	challenges: {
-		type: Array,
-		default: []
-	},
 	createdAt: {
 		type: Date,
 		default: new Date()
@@ -33,15 +29,17 @@ let challengeSchema = mongoose.Schema({
 		type: String,
 		required: true
 	},
+	userId: {
+		type: Number,
+		required: true
+	},
 	isPublic: {
 		type: Boolean,
-		required: true,
 		default: true
 	},
 	subscribedUsers: {
 		type: Array,
-		required: true,
-		default: []
+		required: true
 	},
 	//
 	// Array of attempt ids

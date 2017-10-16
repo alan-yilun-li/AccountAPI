@@ -14,7 +14,8 @@ module.exports = function(app) {
   app.get('/users/:username', (req, res) => {usersController.findUser(req, res)})
   app.put('/users/:username', (req, res) => {usersController.updateUser(req, res)})
 
-  // app.get('/challenges/:_id', (req, res) => {challengesController.getChallenge(res, req)})
-  // app.post('/challenges', (req, res) => {challengesController.createChallenge(req, res)})
+  app.use('/challenges', authenticateToken)
+  app.get('/challenges/:_id', (req, res) => {challengesController.getChallenge(req, res)})
+  app.post('/challenges', (req, res) => {challengesController.createChallenge(req, res)})
 
 }

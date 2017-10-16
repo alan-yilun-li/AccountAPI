@@ -17,8 +17,8 @@ module.exports = {
     let newUser = new User(user)
     newUser.save().then((result) => {
       res.send({success: 1, user: usersPresenter.present(result)})
-    }).catch((error) => {
-      res.send({error: error});
+    }).catch((err) => {
+      res.send({error: 1, errmsg: err.errmsg})
     })
   },
 
@@ -51,7 +51,7 @@ module.exports = {
         res.send({error: 'No such user in DB'})
       }
     }).catch((error) => {
-      res.send({error: error.errmsg})
+      res.send({error: 1, errsmg: "query error"})
     })
   },
 

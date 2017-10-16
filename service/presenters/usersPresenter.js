@@ -1,5 +1,9 @@
 module.exports = {
 	present: function(user) {
-		return { username: user.username }
+		let u = Object.assign({}, user._doc)
+		delete u.__v
+		delete u.token
+		delete u.password
+		return u
 	}
 }

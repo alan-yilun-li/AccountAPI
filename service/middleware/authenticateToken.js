@@ -9,6 +9,7 @@ module.exports = function(req, res, next) {
 	User.findOne({ token: token })
 	.then((result) => {
 		if (result.token === token) {
+			req.body.currentUser = result._id
 			next()
 		} else {
 			res.send({error: "invalid token"})
