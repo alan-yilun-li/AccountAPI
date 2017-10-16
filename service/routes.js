@@ -17,5 +17,6 @@ module.exports = function(app) {
   app.use('/challenges', authenticateToken)
   app.get('/challenges/:_id', (req, res) => {challengesController.getChallenge(req, res)})
   app.post('/challenges', (req, res) => {challengesController.createChallenge(req, res)})
+  app.put('/challenges/:_id', (req, res) => {challengesController.updateChallenge(req, res)})
 
 }

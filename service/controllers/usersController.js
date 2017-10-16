@@ -1,7 +1,7 @@
 "use strict"
 
 const Promise = require('promise')
-const User = require('../../db/collections').User
+const User = require('../../db').User
 const token = require('rand-token')
 const usersPresenter = require('../presenters').users
 

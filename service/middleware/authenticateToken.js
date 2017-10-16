@@ -1,9 +1,9 @@
-const User = require('../../db/collections').User
+const User = require('../../db').User
 
 module.exports = function(req, res, next) {
 	let token = req.get('Authorization')
 	if (!token) {
-		res.send({error: "authentication token required"})
+		res.send({error: 1, errmsg: 'authentication token required'})
 		return
 	}
 	User.findOne({ token: token })
@@ -12,12 +12,12 @@ module.exports = function(req, res, next) {
 			req.body.currentUser = result._id
 			next()
 		} else {
-			res.send({error: "invalid token"})
+			res.send({error: 1, errmsg: 'invalid token'})
 			return
 		}
 	})
 	.catch((result) => {
-		res.send({error: "invalid token"})
+		res.send({error: 1, errmsg: 'invalid token'})
 		return
 	})
 }
