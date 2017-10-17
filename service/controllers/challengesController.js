@@ -9,7 +9,7 @@ manage users themselves.
 
 module.exports = {
 	createChallenge: function createChallenge(req, res) {
-		const challengeData = { title: req.body.title, userId: req.body.currentUser, subscribedUsers: new Set([req.body.currentUser])}
+		const challengeData = { title: req.body.title, userId: req.body.currentUser, subscribedUsers: [req.body.currentUser]}
 		let newChallenge = new Challenge(challengeData)
 		newChallenge.save().then((result) => {
       res.send({success: 1, challenge: challengesPresenter.present(result)})
@@ -41,12 +41,35 @@ module.exports = {
 		}
 		Challenge.findOne({_id: req.params._id}).then((result) => {
 			if (result.userId == req.body.currentUser) {
-				
-				res.send({success: 1, challenge: challengesPresenter.present(result)})
+				let s = new Set()
+				result.subscribedUsers.forEach((id) => {s.add(id)})
+				if (challengeData.addSubscriptions) challengeData.addSubscriptions.forEach((id) => {s.add(id)});
+				if (challengeData.removeSubscriptions) challengeData.removeSubscriptions.forEach((id) => {s.delete(id)});
+				result.subscribedUsers = Array.from(s)
+				if (challengeData.title) result.title = challengeData.title;
+
+				result.save().then((result) => {
+					res.send({success: 1, challenge: challengesPresenter.present(result)})
+				}).catch((err) => {
+					res.send({error: 1, errmsg: err.errmsg})
+				})
 			} else {
 				res.send({error: 1, errmsg: 'you are not the owner of this challenge'})
 			}
 		}).catch((err) => {
+			res.send({error: 1, errmsg: err.errmsg})
+		})
+	},
+
+	deleteChallenge: function deleteChallenge(req, res) {
+		Challenge.remove({_id: req.params._id}).then((result) => {
+			const resultObj = JSON.parse(result)
+      if (resultObj.n == 1) {
+        res.send({success: result})
+      } else {
+        res.send({error: 'challenge does not exist'})
+      }
+		}).then((err) => {
 			res.send({error: 1, errmsg: err.errmsg})
 		})
 	}
