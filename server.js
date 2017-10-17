@@ -5,7 +5,6 @@ const express = require('express')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser')
 const keys = require('./config/keys.js')
-const collections = require('./db/collections.js')
 
 // Initializing the application
 const app = express()

@@ -1,4 +1,6 @@
 const users = require('./usersController')
+const challenges = require('./challengesController')
 module.exports = {
-	users: users
+	users: users,
+	challenges: challenges
 }
